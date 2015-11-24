@@ -10,26 +10,32 @@ import java.io.*; //Serializable is somewhere inside - find it and reduce this l
 int size = 0;
 int pageno = 1;
 int currentTweet;
-String user = "venmo";
+String user = "uber";
 //List<Status> tweets;
 List<Status> tweets = new ArrayList<Status>();
 String fileStore;
 String timeString;
 String wordsTable;
-
+String tsvOutput;
+Table nameTable;
+int currentRow = -1;
+PrintWriter writer;
 
 Twitter twitter;
 
 void setup() {
   size(800, 600);
-  timeString = year()+"-"+month()+"-"+day()+"-"+hour()+"-"+minute()+"-"+second();
-  println(timeString);
-  fileStore = user + "_"+timeString + ".txt";
-  wordsTable = user + "_"+timeString + "weighted.txt";
-  println(fileStore);
+  timeString = year()+"-"+month()+"-"+day()+"-"+hour()+"-"+minute()+"-"+second(); //GET TIME
+  println(timeString); // PRINT TIME
+  fileStore = user + "_"+timeString + ".txt"; // Where to save the RAW tweets
+  wordsTable = user + "_"+timeString + "weighted.txt"; //Where to save the weighted Tweets
+  println(fileStore); // Prints the raw tweet location
+  tsvOutput = "data/" + fileStore + ".tsv";
+   writer = createWriter(tsvOutput);
 
-  tConfigure();
-  getNewTweets();
+
+  tConfigure(); // Configures Twitter Authentication, in a separate file. 
+  getNewTweets(); //Gets tweets to memory
 }
 
 
@@ -37,23 +43,22 @@ void draw() {
   fill(0, 40);
   rect(0, 0, width, height);
 
-
-
-
-  Status status = tweets.get(currentTweet);
+  Status status = tweets.get(currentTweet); 
   println("current tweet: " + currentTweet);
   String str = status.getText();
-  if (str.charAt(0) != '@') {
-    appendTextToFile(fileStore, status.getText());
+  if (str.charAt(0) != '@') { //IGNORES replies and tweets that starts with metions
+    String getTextSani = status.getText().replace(/\r?\n/g, "  ");
+    appendTextToFile(fileStore, getTextSani); //Put tweet into text file. CHANGE
+    writer.println(user + "\t" + status.getId() + "\t" + status.getCreatedAt() + "\t" + getTextSani);
     fill(200);
-    text(status.getText(), random(width-300), random(height-150), 300, 200);
+    text(getTextSani, random(width-300), random(height-150), 300, 200); //prints tweet on screen
     delay(20);
   }
 
-    currentTweet = currentTweet + 1;
+  currentTweet = currentTweet + 1; //Moves to the next tweet
 
- 
-  if (currentTweet >= tweets.size()-1) {
+
+  if (currentTweet >= tweets.size()-1) { //Ends the sketch when the tweet list is over
     //currentTweet = 0;
     makeWordTable();
     println("Words Weighted and Saved");
@@ -62,7 +67,6 @@ void draw() {
     text("Weighted & done", width/2, height/2);
     noLoop();
   }
-
 }
 
 // GET NEW TWEETS ////////////////////////////////////////////
@@ -76,8 +80,8 @@ void getNewTweets() {
       tweets.addAll(twitter.getUserTimeline(user, page));
       println("GET - getting new tweets, page number " + pageno);
       pageno++;
-      //if (tweets.size() == size || pageno == 5) //limit to 5 to save on API limit
-      if (tweets.size() == size) // Unlimited - max amount of tweets (3200)
+      if (tweets.size() == size || pageno == 5) //limit to 5 to save on API limit - TEST, comment out this line and uncomment the next
+        //if (tweets.size() == size) // Unlimited - max amount of tweets (3200) //uncomment for PROD
         break;
     }
     catch(TwitterException te) {
@@ -136,7 +140,7 @@ void keyPressed( ) {
 
 
 void makeWordTable() {
-    String[] stopWords = loadStrings("StopWords.txt");
+  String[] stopWords = loadStrings("StopWords.txt"); //Loads Stop Words File
   //println(stopWords);
   String[] data = loadStrings(fileStore);
   StringBuilder strBuilder = new StringBuilder();
