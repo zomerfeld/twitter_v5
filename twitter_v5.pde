@@ -47,7 +47,7 @@ void draw() {
   println("current tweet: " + currentTweet);
   String str = status.getText();
   if (str.charAt(0) != '@') { //IGNORES replies and tweets that starts with metions
-    String getTextSani = status.getText().replace(/\r?\n/g, "  ");
+    String getTextSani = status.getText().replaceAll("(\\r|\\n)", "  "); //removes break lines from status - how wonderful
     appendTextToFile(fileStore, getTextSani); //Put tweet into text file. CHANGE
     writer.println(user + "\t" + status.getId() + "\t" + status.getCreatedAt() + "\t" + getTextSani);
     fill(200);
@@ -80,8 +80,8 @@ void getNewTweets() {
       tweets.addAll(twitter.getUserTimeline(user, page));
       println("GET - getting new tweets, page number " + pageno);
       pageno++;
-      if (tweets.size() == size || pageno == 5) //limit to 5 to save on API limit - TEST, comment out this line and uncomment the next
-        //if (tweets.size() == size) // Unlimited - max amount of tweets (3200) //uncomment for PROD
+     // if (tweets.size() == size || pageno == 5) //limit to 5 to save on API limit - TEST, comment out this line and uncomment the next
+        if (tweets.size() == size) // Unlimited - max amount of tweets (3200) //uncomment for PROD
         break;
     }
     catch(TwitterException te) {
