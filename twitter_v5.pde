@@ -35,16 +35,18 @@ void setup() {
   println(timeString); // PRINT TIME
   //fileStore = user + "_"+timeString + ".txt"; // Auto-generete per-use tweets filename Where to save the RAW tweets
   fileStore = "tweets";
-  wordsTable = user + "_"+timeString + "weighted.txt"; //Where to save the weighted Tweets
-  println(fileStore); // Prints the raw tweet location
   tsvOutput = fileStore + ".tsv";
+  println(tsvOutput); // Prints the raw tweet location
+  wordsTable = user + "_"+timeString + "weighted.txt"; //Where to save the weighted Tweets
   //writer = createWriter(tsvOutput);
-  nameTable = new Table("names.tsv");
-  dataTable = new Table(tsvOutput);
-
+  nameTable = loadTable("names.tsv", "tsv");
+  dataTable = loadTable(tsvOutput,"tsv");
   tConfigure(); // Configures Twitter Authentication, in a separate file.
   rowCount = nameTable.getRowCount();
   println("rowcount of name table is: " + rowCount);
+  maxID();
+
+  
 }
 
 void draw() {
@@ -59,7 +61,7 @@ void draw() {
     if (str.charAt(0) != '@') { //IGNORES replies and tweets that starts with metions
       String getTextSani = status.getText().replaceAll("(\\r|\\n)", "  "); //removes break lines from status - how wonderful
       appendTextToFile(fileStore, getTextSani); //Put tweet into text file. CHANGE
-      appendTextToFile(tsvOutput,(user + "\t" + status.getId() + "\t" + status.getCreatedAt() + "\t" + getTextSani));
+      appendTextToFile(tsvOutput, (user + "\t" + status.getId() + "\t" + status.getCreatedAt() + "\t" + getTextSani));
       fill(200);
       text(getTextSani, random(width-300), random(height-150), 300, 200); //prints tweet on screen
       delay(2);
@@ -99,15 +101,8 @@ void draw() {
       //processTweets();
     }
   }
-  
-    if (currentRow > rowCount) {
-    String[] lines = loadStrings("tweets.tsv");
-    for (int i = 0; i < lines.length; i++) {
-      String[] pieces = split(lines[i], TAB);
-//      users[i] = pieces[0];
-      // The three digit code for the team is the first column 
-    }
+
+  if (currentRow > rowCount) {
     noLoop();
   }
-  
 }

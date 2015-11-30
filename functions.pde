@@ -1,16 +1,20 @@
 // GET NEW TWEETS ////////////////////////////////////////////
 
-void getNewTweets(String searchUser, long searchSince) {
+void getNewTweets(String searchUser, long whatever) {
   while (true) {
 
     try {
       size = tweets.size(); 
-      Paging page = new Paging(pageno, 100, searchSince);
+      println("searching this user in the name table: " + searchUser);
+      TableRow result = nameTable.findRow(searchUser, 1);
+      long searchSince = Long.parseLong(result.getString(2));
+      println("this is the sinceID: " + searchSince);
+      Paging page = new Paging(pageno, 100).sinceId(searchSince);
       tweets.addAll(twitter.getUserTimeline(searchUser, page));
       println("GET - getting new tweets, page number " + pageno);
       pageno++;
-      if (tweets.size() == size || pageno == 5) //limit to 5 to save on API limit - TEST, comment out this line and uncomment the next
-        //   if (tweets.size() == size) // Unlimited - max amount of tweets (3200) //uncomment for PROD
+      //if (tweets.size() == size || pageno == 5) //limit to 5 to save on API limit - TEST, comment out this line and uncomment the next
+      if (tweets.size() == size) // Unlimited - max amount of tweets (3200) //uncomment for PROD
         break;
     }
     catch(TwitterException te) {
@@ -27,7 +31,6 @@ void getNewTweets(String searchUser, long searchSince) {
 // PROCESS TWEETS - SAVE TO FILE AND DISPLAY ////////////////////////////////////////////
 
 void processTweets() {
-
 }
 
 
@@ -128,4 +131,39 @@ void makeWordTable() {
   }
 
   exit();
+}
+
+
+// FIND THE MAX IDS IN THE TWEETS TSV FILE ////////////////////////////////////////////
+
+
+void maxID() {
+
+  HashMap<String, Long> users = new HashMap<String, Long>();
+  for (int row = 0; row < nameTable.getRowCount(); row++) {
+    String userName = nameTable.getString(row, 1);
+    users.put(userName, (long) 1);
+  }
+
+  for (int row = 0; row < dataTable.getRowCount(); row++) {
+    String userName = dataTable.getString(row, 0);
+    Long lastTweetId = Long.parseLong(dataTable.getString(row, 1));
+
+    if (users.get(userName) < lastTweetId) {
+      users.put(userName, lastTweetId);
+      println("this is larger: " + lastTweetId);
+    }
+  } 
+
+  for (String userName : users.keySet()) {
+    println(userName + ": " + users.get(userName));
+    for (int i = 0; i < nameTable.getRowCount(); i++) {
+      if (nameTable.getString(i,1).equals(userName)) {
+        //println(i + userName + (users.get(userName)).toString());
+        nameTable.setString(i,2,(users.get(userName)).toString());
+        //println(nameTable.getString(i,2));
+        saveTable(nameTable,"data/names.tsv");
+      }
+    }
+  }
 }
