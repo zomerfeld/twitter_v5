@@ -80,24 +80,10 @@ void draw() {
     if (currentRow < rowCount) {
       user = nameTable.getString(currentRow, 1); 
       DataRowCount = dataTable.getRowCount();
-      //count through rows to find max and min values in random.tsv and store values in variables
-      /*    for (int row = 0; row< rowCount; row++) {
-       //NZ - this was originally pointing to the sizes table.
-       //get the value of the second field in each row (1) - NZ - Changed it to the 3rd
-       float value = dataTable.getFloat(row, 1);
-       //if the highest # in the table is higher than what is stored in the 
-       //dataMax variable, set value = dataMax
-       //NZ - This is just verification of size I think? 
-       if (value>lastID) {
-       lastID = (long)value;
-       }
-       */
-
-
 
 
       println("now retrieving: " + user);
-      getNewTweets(user, 1); //Gets tweets to memory 
+      getNewTweets(user, 1); //Gets tweets to memory (1 is fake number, real number retrieval for sinceID is done in the actual function
       //processTweets();
     }
   }
