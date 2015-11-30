@@ -8,7 +8,7 @@ void getNewTweets(String searchUser, long whatever) {
       println("searching this user in the name table: " + searchUser);
       TableRow result = nameTable.findRow(searchUser, 1);
       long searchSince = Long.parseLong(result.getString(2));
-      println("this is the sinceID: " + searchSince);
+      println("this is the sinceID from names.tsv: " + searchSince);
       Paging page = new Paging(pageno, 100).sinceId(searchSince);
       tweets.addAll(twitter.getUserTimeline(searchUser, page));
       println("GET - getting new tweets, page number " + pageno);

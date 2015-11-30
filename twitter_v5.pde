@@ -103,6 +103,8 @@ void draw() {
   }
 
   if (currentRow > rowCount) {
+    maxID();
     noLoop();
+    println("***DONEZO***");
   }
 }
