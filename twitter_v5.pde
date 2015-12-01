@@ -22,8 +22,6 @@ int currentRow = -1;
 PrintWriter writer;
 int rowCount = 0;
 int DataRowCount;
-String[] users;
-String[] maxes;
 long lastID = 1;
 
 Twitter twitter;
