@@ -3,7 +3,10 @@ RT
 tinyurl
 co
 https://
-https
+https	
+lyft		
+facebook
+sprig
 shyp
 venmo
 radpad
