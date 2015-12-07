@@ -6,8 +6,8 @@ void getNewTweets(String searchUser, long whatever) {
     try {
       size = tweets.size(); 
       println("searching this user in the name table: " + searchUser);
-      TableRow result = nameTable.findRow(searchUser, 1);
-      long searchSince = Long.parseLong(result.getString(2));
+      TableRow result = nameTable.findRow(searchUser, 0);
+      long searchSince = Long.parseLong(result.getString(1));
       println("this is the sinceID from names.tsv: " + searchSince);
       Paging page = new Paging(pageno, 100).sinceId(searchSince);
       tweets.addAll(twitter.getUserTimeline(searchUser, page));
@@ -141,14 +141,20 @@ void maxID() {
 
   HashMap<String, Long> users = new HashMap<String, Long>();
   for (int row = 0; row < nameTable.getRowCount(); row++) {
-    String userName = nameTable.getString(row, 1);
+    String userName = nameTable.getString(row, 0);
     users.put(userName, (long) 1);
+
   }
 
   for (int row = 0; row < dataTable.getRowCount(); row++) {
     String userName = dataTable.getString(row, 0);
-    Long lastTweetId = Long.parseLong(dataTable.getString(row, 1));
-
+    println(userName);
+    long lastTweetId = Long.parseLong(dataTable.getString(row, 1));
+    println(lastTweetId);
+    
+    //if (users.get(userName) == null) {
+    // println(userName + " doesn't exist");
+    //} else 
     if (users.get(userName) < lastTweetId) {
       users.put(userName, lastTweetId);
       println("this is larger: " + lastTweetId);
@@ -158,9 +164,9 @@ void maxID() {
   for (String userName : users.keySet()) {
     println(userName + ": " + users.get(userName));
     for (int i = 0; i < nameTable.getRowCount(); i++) {
-      if (nameTable.getString(i,1).equals(userName)) {
+      if (nameTable.getString(i,0).equals(userName)) {
         //println(i + userName + (users.get(userName)).toString());
-        nameTable.setString(i,2,(users.get(userName)).toString());
+        nameTable.setString(i,1,(users.get(userName)).toString());
         //println(nameTable.getString(i,2));
         saveTable(nameTable,"data/names.tsv");
       }

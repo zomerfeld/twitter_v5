@@ -76,7 +76,7 @@ void draw() {
     println("tweets.size (total tweets in mem): " + tweets.size());
 
     if (currentRow < rowCount) { //if there are more users to look up in name table
-      user = nameTable.getString(currentRow, 1); //gets the username from the name table
+      user = nameTable.getString(currentRow, 0); //gets the username from the name table
       DataRowCount = dataTable.getRowCount(); //counts the rows in the tweets table
 
 
